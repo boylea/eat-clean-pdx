@@ -10,27 +10,32 @@ $(document).ready(function () {
     map = new google.maps.Map(document.getElementById('map-canvas'),
         mapOptions);
 
-    var req = new XMLHttpRequest();
-
-    // Feature detection for CORS
-    if ('withCredentials' in req) {
-        req.open('GET', 'http://api.civicapps.org/restaurant-inspections/', true);
-        // Just like regular ol' XHR
-        req.onreadystatechange = function() {
-            if (req.readyState === 4) {
-                if (req.status >= 200 && req.status < 400) {
-                    // JSON.parse(req.responseText) etc.
-                    console.log("response:", req.responseText)
-                } else {
-                    // Handle error case
-                    console.log("bummer")
-                }
-            }
+    $.getJSON('/report', function(data) {
+        console.log('data!', data.length);
+        // $.each(data, function(value, key) {
+        for (key in data) {
+            // console.log('data',key, data[key]['name']);
+            createMarker(data[key]);
         };
-        req.send();
-    }
-
+    });
+    
 });
+
+function createMarker(dataitem) {
+    // creating an info window one at a time in a function allows proper
+    // namespacing so that each info window is associated with correct marker
+    var location = dataitem['location'];
+    var resturant_latlng = new google.maps.LatLng(location['Latitude'], location['Longitude']);
+    var marker = new google.maps.Marker({
+        position: resturant_latlng,
+        map: map,
+        title: dataitem['name']
+    });
+    var infowindow = new google.maps.InfoWindow({
+        content: dataitem['name'] + '<br>score: ' + dataitem['score']
+    });
+    google.maps.event.addListener(marker, 'click', function(){infowindow.open(map, marker);});
+}
 
 }()); // end of namespace
 
