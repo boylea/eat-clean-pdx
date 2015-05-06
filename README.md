@@ -2,3 +2,10 @@
 playing around with civicapps restaurant inspection dataset
 
 Express.js app that maps Portland [resturant inspection info](http://www.civicapps.org/datasets/restaurant-inspections)
+
+# install and run
+
+```
+npm install
+npm start
+```
